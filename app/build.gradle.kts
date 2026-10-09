@@ -16,8 +16,24 @@ android {
         versionName = "1.0.0"
     }
 
+    // Release signing comes from Gradle properties outside the repository (e.g. ~/.gradle/gradle.properties):
+    // sensorbridge.signing.storeFile, .storePassword, .keyAlias and .keyPassword. Without them, release builds
+    // are left unsigned.
+    val signingStore = providers.gradleProperty("sensorbridge.signing.storeFile").orNull
+    signingConfigs {
+        if (signingStore != null) {
+            create("release") {
+                storeFile = file(signingStore)
+                storePassword = providers.gradleProperty("sensorbridge.signing.storePassword").get()
+                keyAlias = providers.gradleProperty("sensorbridge.signing.keyAlias").get()
+                keyPassword = providers.gradleProperty("sensorbridge.signing.keyPassword").get()
+            }
+        }
+    }
+
     buildTypes {
         release {
+            signingConfig = signingConfigs.findByName("release")
             isMinifyEnabled = true
             isShrinkResources = true
             proguardFiles(getDefaultProguardFile("proguard-android-optimize.txt"), "proguard-rules.pro")

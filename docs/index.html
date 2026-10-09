@@ -1,0 +1,215 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Tilt: a marble labyrinth for Android</title>
+  <meta name="description" content="Tilt is a wooden marble labyrinth you steer by tilting your phone. Real rolling physics, steel-on-wood sound, and a puff of breath to jump. Free and open source for Android.">
+  <meta name="theme-color" content="#17120e">
+  <link rel="icon" href="assets/favicon.svg" type="image/svg+xml">
+  <link rel="canonical" href="https://swiftugandan.github.io/sensorbridge/">
+
+  <meta property="og:type" content="website">
+  <meta property="og:title" content="Tilt: a marble labyrinth for Android">
+  <meta property="og:description" content="Steer a steel marble through wooden labyrinths by tilting your phone. Blow to jump. Free and open source.">
+  <meta property="og:image" content="https://swiftugandan.github.io/sensorbridge/assets/og.png">
+  <meta property="og:url" content="https://swiftugandan.github.io/sensorbridge/">
+  <meta name="twitter:card" content="summary_large_image">
+
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,600;9..144,800&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+  <a class="skip" href="#main">Skip to content</a>
+
+  <header class="nav">
+    <div class="wrap nav__inner">
+      <a class="brand" href="#top" aria-label="Tilt home">
+        <svg class="brand__mark" viewBox="0 0 32 32" aria-hidden="true"><use href="#marble"/></svg>
+        <span>Tilt</span>
+      </a>
+      <nav aria-label="Main">
+        <ul class="nav__links">
+          <li><a href="#play">How it plays</a></li>
+          <li><a href="#features">Features</a></li>
+          <li><a href="#sensorbridge">SensorBridge</a></li>
+          <li><a href="https://github.com/swiftugandan/sensorbridge">GitHub</a></li>
+        </ul>
+      </nav>
+      <a class="button button--small" href="https://github.com/swiftugandan/sensorbridge/releases/latest/download/Tilt.apk">Download</a>
+    </div>
+  </header>
+
+  <main id="main">
+    <section class="hero" id="top">
+      <div class="wrap hero__inner">
+        <div class="hero__copy">
+          <p class="eyebrow">Free · Open source · Android</p>
+          <h1>Tilt the phone.<br>Thread the marble.</h1>
+          <p class="lede">A wooden labyrinth in your hands. A steel marble that rolls, knocks and drops like the real thing. And when a hole fills the whole corridor, a puff of breath to jump it.</p>
+          <div class="cta">
+            <a class="button" href="https://github.com/swiftugandan/sensorbridge/releases/latest/download/Tilt.apk">
+              <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3v12m0 0-5-5m5 5 5-5M5 21h14" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+              Download for Android
+            </a>
+            <a class="button button--ghost" href="https://github.com/swiftugandan/sensorbridge">View the source</a>
+          </div>
+          <p class="fineprint">Android 8 or later · 1.3 MB · No ads, no accounts, no tracking</p>
+        </div>
+        <div class="hero__art" aria-hidden="true">
+          <div class="phone phone--hero" data-tilt>
+            <img src="assets/tilt-play.webp" width="640" height="1257" alt="">
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section class="section" id="play" aria-labelledby="play-title">
+      <div class="wrap">
+        <h2 id="play-title" class="section__title">How it plays</h2>
+        <ol class="steps">
+          <li class="step">
+            <svg class="step__icon" viewBox="0 0 48 48" aria-hidden="true">
+              <rect x="13" y="6" width="22" height="36" rx="4" transform="rotate(-14 24 24)" fill="none" stroke="currentColor" stroke-width="2.5"/>
+              <path d="M6 30c3 6 9 10 16 11" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"/>
+              <path d="m19 38 3 3-3 3" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/>
+            </svg>
+            <h3>Tilt to roll</h3>
+            <p>Hold the phone however feels natural. That pose becomes "level", and leaning away from it rolls the marble that way.</p>
+          </li>
+          <li class="step">
+            <svg class="step__icon" viewBox="0 0 48 48" aria-hidden="true">
+              <rect x="18" y="6" width="12" height="22" rx="6" fill="none" stroke="currentColor" stroke-width="2.5"/>
+              <path d="M11 22a13 13 0 0 0 26 0M24 35v7m-7 0h14" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"/>
+            </svg>
+            <h3>Blow to jump</h3>
+            <p>When a hole spans the whole corridor, build up speed and blow on the microphone or clap. Prefer tapping? That works too.</p>
+          </li>
+          <li class="step">
+            <svg class="step__icon" viewBox="0 0 48 48" aria-hidden="true">
+              <circle cx="24" cy="24" r="16" fill="none" stroke="currentColor" stroke-width="2.5"/>
+              <circle cx="24" cy="24" r="8" fill="currentColor"/>
+            </svg>
+            <h3>Sink it in the gold ring</h3>
+            <p>Beat the par time for three stars. Fall in a hole and you're back at the last flag, a few seconds poorer.</p>
+          </li>
+        </ol>
+      </div>
+    </section>
+
+    <section class="section section--raised" id="features" aria-labelledby="features-title">
+      <div class="wrap">
+        <h2 id="features-title" class="section__title">Made to feel real</h2>
+        <div class="features">
+          <article class="feature">
+            <h3>A marble with weight</h3>
+            <p>Rolling physics run 240 times a second: the marble picks up speed downhill, bounces off walls, and rides a hole's rim before it drops. Clip one at speed and you might just skim past.</p>
+          </article>
+          <article class="feature">
+            <h3>Steel on wood</h3>
+            <p>Every sound is synthesised live, nothing is a recording. You hear a wooden rumble that rises with speed, a sharp metallic click that matches each hit, and you feel the knocks through the phone.</p>
+          </article>
+          <article class="feature">
+            <h3>Fair, every time</h3>
+            <p>Before a level reaches you, a built-in player finishes it twice without falling: once steadily and once with a deliberately shaky hand. Levels that need perfect precision are thrown away.</p>
+          </article>
+          <article class="feature">
+            <h3>28 levels and a daily</h3>
+            <p>Four training levels teach each move, then 24 labyrinths grow from small and gentle to big, looping and full of traps. A fresh challenge every day, the same for everyone.</p>
+          </article>
+          <article class="feature">
+            <h3>Walls with depth</h3>
+            <p>The board is lit from one side and its walls lean as you tilt, as if you were looking into a real wooden box. It's drawn on its own thread, so it stays smooth.</p>
+          </article>
+          <article class="feature">
+            <h3>Play your way</h3>
+            <p>Steer by tilting or by dragging, jump by sound or by tap, and adjust sensitivity, volume and vibration. The microphone is only on while a level needs it, and nothing is recorded.</p>
+          </article>
+        </div>
+      </div>
+    </section>
+
+    <section class="section gallery" aria-labelledby="gallery-title">
+      <div class="wrap">
+        <h2 id="gallery-title" class="section__title">A look inside</h2>
+      </div>
+      <ul class="gallery__strip" role="list">
+        <li><figure class="phone"><img src="assets/tilt-home.webp" width="640" height="1257" loading="lazy" alt="Tilt's home screen: a steel marble circling a gold-ringed hole, with Continue, Levels and Daily buttons."></figure></li>
+        <li><figure class="phone"><img src="assets/tilt-play.webp" width="640" height="1257" loading="lazy" alt="Labyrinth 7 in play: wooden walls, black holes, teal checkpoints and the gold goal, with timer and par."></figure></li>
+        <li><figure class="phone"><img src="assets/tilt-levels.webp" width="640" height="1257" loading="lazy" alt="The levels screen, showing stars and best times for each labyrinth."></figure></li>
+        <li><figure class="phone"><img src="assets/tilt-settings.webp" width="640" height="1257" loading="lazy" alt="Settings: tilt or touch steering, level position, sensitivity, and jumping by sound or tap."></figure></li>
+      </ul>
+    </section>
+
+    <section class="section numbers" aria-label="Tilt in numbers">
+      <div class="wrap numbers__grid">
+        <div><strong>240 Hz</strong><span>physics</span></div>
+        <div><strong>28</strong><span>levels, plus a daily</span></div>
+        <div><strong>1.3 MB</strong><span>download</span></div>
+        <div><strong>0</strong><span>ads or trackers</span></div>
+      </div>
+    </section>
+
+    <section class="section section--raised" id="sensorbridge" aria-labelledby="sb-title">
+      <div class="wrap sb">
+        <div class="sb__copy">
+          <p class="eyebrow">Also in the repository</p>
+          <h2 id="sb-title" class="section__title section__title--left">SensorBridge</h2>
+          <p>The toolkit Tilt grew out of: every sensor on your phone, live. Charts for motion and environment sensors, a microphone spectrogram that names the note you're playing, and a camera that redraws the world as line art.</p>
+          <p>It also streams sensors to your computer over USB. Plug the phone in and read it from a terminal with the <code>sensorctl</code> script from the repository:</p>
+          <pre class="code" aria-label="Example terminal session"><code><span class="code__prompt">$</span> sensorctl list
+<span class="code__prompt">$</span> sensorctl stream accelerometer --rate 50
+<span class="code__prompt">$</span> sensorctl read light</code></pre>
+          <div class="cta">
+            <a class="button" href="https://github.com/swiftugandan/sensorbridge/releases/latest/download/SensorBridge.apk">Download SensorBridge</a>
+            <a class="button button--ghost" href="https://github.com/swiftugandan/sensorbridge#readme">Read the docs</a>
+          </div>
+        </div>
+        <div class="sb__shots" aria-hidden="false">
+          <figure class="phone phone--light"><img src="assets/sb-spectrogram.webp" width="640" height="1085" loading="lazy" alt="SensorBridge's microphone screen: a 1 kHz tone shown as a bright line on a blue spectrogram, labelled B5."></figure>
+          <figure class="phone phone--light"><img src="assets/sb-live.webp" width="640" height="1257" loading="lazy" alt="SensorBridge's accelerometer screen: live x, y and z values with a chart of the last ten seconds."></figure>
+        </div>
+      </div>
+    </section>
+
+    <section class="section" id="install" aria-labelledby="install-title">
+      <div class="wrap install">
+        <h2 id="install-title" class="section__title">Install in a minute</h2>
+        <ol class="install__steps">
+          <li><strong>Download</strong> <a href="https://github.com/swiftugandan/sensorbridge/releases/latest/download/Tilt.apk">Tilt.apk</a> on your Android phone.</li>
+          <li><strong>Open it</strong> from your downloads. If asked, allow your browser to install apps.</li>
+          <li><strong>Play.</strong> The first training level shows you the rest.</li>
+        </ol>
+        <p class="fineprint">Every release is signed with the same key. Its SHA-256 certificate fingerprint is<br>
+          <code class="fingerprint"><span>23:45:90:1C:76:CA:C4:1D:74:FA:ED:E6:CF:1E:CC:60:</span><span>64:3C:9E:E3:B1:2B:E3:4F:E4:77:6D:FA:89:57:06:5A</span></code></p>
+      </div>
+    </section>
+  </main>
+
+  <footer class="footer">
+    <div class="wrap footer__inner">
+      <span>Tilt and SensorBridge · made by <a href="https://github.com/swiftugandan">@swiftugandan</a></span>
+      <span><a href="https://github.com/swiftugandan/sensorbridge">Source</a> · <a href="https://github.com/swiftugandan/sensorbridge/releases">Releases</a> · <a href="https://github.com/swiftugandan/sensorbridge/issues">Report a problem</a></span>
+    </div>
+  </footer>
+
+  <svg width="0" height="0" style="position:absolute" aria-hidden="true">
+    <defs>
+      <radialGradient id="steel" cx="0.35" cy="0.3" r="0.75">
+        <stop offset="0" stop-color="#fff"/>
+        <stop offset="0.25" stop-color="#dde2e8"/>
+        <stop offset="0.7" stop-color="#7c8591"/>
+        <stop offset="1" stop-color="#262a31"/>
+      </radialGradient>
+      <symbol id="marble" viewBox="0 0 32 32">
+        <circle cx="16" cy="16" r="15" fill="#f6c35a"/>
+        <circle cx="16" cy="16" r="11" fill="#0d0907"/>
+        <circle cx="12" cy="12" r="7.5" fill="url(#steel)"/>
+      </symbol>
+    </defs>
+  </svg>
+  <script src="main.js" defer></script>
+</body>
+</html>

@@ -1,4 +1,15 @@
-# SensorBridge
+# SensorBridge and Tilt
+
+Two Android apps built on the same sensor code:
+
+- **[Tilt](#tilt-a-marble-labyrinth-game)**, a marble labyrinth you steer by tilting the phone.
+- **SensorBridge**, which reads every sensor live, on the phone and from your computer over adb.
+
+[Website](https://swiftugandan.github.io/sensorbridge/) ·
+[Download Tilt](https://github.com/swiftugandan/sensorbridge/releases/latest/download/Tilt.apk) ·
+[Download SensorBridge](https://github.com/swiftugandan/sensorbridge/releases/latest/download/SensorBridge.apk)
+
+## SensorBridge
 
 Read an Android phone's sensors live, on the phone and from your computer over adb.
 
@@ -38,7 +49,13 @@ $ tools/sensorctl stream accelerometer gyroscope --rate 100 --duration 5 --forma
 ./gradlew :app:installDebug          # build and install on the connected phone
 ./gradlew test                       # JVM unit tests (domain, protocol, chart model)
 ./gradlew :app:lintDebug             # Android lint
+./gradlew :app:assembleRelease :tilt:app:assembleRelease   # signed, shrunk release APKs
 ```
+
+Release builds are signed when these Gradle properties are set outside the repository, for example in
+`~/.gradle/gradle.properties`: `sensorbridge.signing.storeFile`, `sensorbridge.signing.storePassword`,
+`sensorbridge.signing.keyAlias` and `sensorbridge.signing.keyPassword`. The website lives in `docs/` and is
+published with GitHub Pages.
 
 Optionally put the CLI on your `PATH`: `ln -s "$PWD/tools/sensorctl" /usr/local/bin/sensorctl`.
 
