@@ -1,0 +1,15 @@
+.gradle/
+.kotlin/
+build/
+local.properties
+.idea/
+*.iml
+.DS_Store
+captures/
+tools/__pycache__/
+
+# Secrets and signing keys never belong in the repository.
+.env*
+!.env.example
+*.jks
+*.keystore

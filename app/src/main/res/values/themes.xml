@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- Compose draws the UI; the window theme only prevents a mismatched flash before the first frame. -->
+    <style name="Theme.SensorBridge" parent="android:Theme.Material.Light.NoActionBar">
+        <item name="android:windowBackground">@color/window_background</item>
+    </style>
+
+    <style name="Theme.SensorBridge.Invisible" parent="android:Theme.Translucent.NoTitleBar">
+        <item name="android:windowAnimationStyle">@null</item>
+        <item name="android:windowNoDisplay">true</item>
+    </style>
+
+    <color name="window_background">#FFF5FAFA</color>
+    <color name="launcher_background">#FF0B3D3E</color>
+</resources>

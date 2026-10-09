@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="utf-8"?>
+<manifest xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools">
+
+    <!-- Wall knocks, falls and wins are felt as well as heard. -->
+    <uses-permission android:name="android.permission.VIBRATE" />
+
+    <!-- Tilt steering needs an accelerometer; a gyroscope makes it smoother but is optional. -->
+    <uses-feature android:name="android.hardware.sensor.accelerometer" android:required="true" />
+    <uses-feature android:name="android.hardware.sensor.gyroscope" android:required="false" />
+    <!-- Blowing to jump is optional: tapping works too. -->
+    <uses-feature android:name="android.hardware.microphone" android:required="false" />
+
+    <application
+        android:name=".TiltApplication"
+        android:allowBackup="true"
+        android:dataExtractionRules="@xml/data_extraction_rules"
+        android:fullBackupContent="@xml/backup_rules"
+        android:appCategory="game"
+        android:icon="@mipmap/ic_launcher"
+        android:roundIcon="@mipmap/ic_launcher"
+        android:label="@string/app_name"
+        android:supportsRtl="true"
+        android:theme="@style/Theme.Tilt">
+
+        <!-- Portrait is locked on purpose: the player steers by tilting the phone, which would otherwise rotate
+             the screen mid-level. Tilt axes are still remapped for the display's rotation (see Tilt.toScreen). -->
+        <activity
+            android:name=".MainActivity"
+            tools:ignore="DiscouragedApi,LockedOrientationActivity"
+            android:exported="true"
+            android:launchMode="singleTop"
+            android:screenOrientation="portrait"
+            android:windowSoftInputMode="adjustResize">
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+                <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
+        </activity>
+    </application>
+
+</manifest>

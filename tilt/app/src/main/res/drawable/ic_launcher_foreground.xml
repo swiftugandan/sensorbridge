@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- A steel marble rolling toward a gold-ringed goal between two maze walls. Safe zone: 21–87. -->
+<vector xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:aapt="http://schemas.android.com/aapt"
+    android:width="108dp"
+    android:height="108dp"
+    android:viewportWidth="108"
+    android:viewportHeight="108">
+    <!-- Walls -->
+    <path android:fillColor="#FF9A6A43" android:pathData="M28,30h40a3,3 0,0 1,3 3v0a3,3 0,0 1,-3 3h-40a3,3 0,0 1,-3 -3v0a3,3 0,0 1,3 -3z" />
+    <path android:fillColor="#FF9A6A43" android:pathData="M77,40a3,3 0,0 1,3 3v35a3,3 0,0 1,-3 3a3,3 0,0 1,-3 -3v-35a3,3 0,0 1,3 -3z" />
+    <!-- Goal: gold ring around a dark hole -->
+    <path android:fillColor="#FFF2B84B" android:pathData="M58,68m-11,0a11,11 0,1 1,22 0a11,11 0,1 1,-22 0" />
+    <path android:fillColor="#FF0D0907" android:pathData="M58,68m-8,0a8,8 0,1 1,16 0a8,8 0,1 1,-16 0" />
+    <!-- Marble -->
+    <path android:pathData="M40,54m-12,0a12,12 0,1 1,24 0a12,12 0,1 1,-24 0">
+        <aapt:attr name="android:fillColor">
+            <gradient
+                android:type="radial"
+                android:centerX="36"
+                android:centerY="49"
+                android:gradientRadius="17">
+                <item android:offset="0" android:color="#FFFFFFFF" />
+                <item android:offset="0.3" android:color="#FFD3D8DF" />
+                <item android:offset="0.75" android:color="#FF717A86" />
+                <item android:offset="1" android:color="#FF2E333B" />
+            </gradient>
+        </aapt:attr>
+    </path>
+</vector>

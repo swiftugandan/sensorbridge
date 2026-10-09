@@ -1,0 +1,139 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">SensorBridge</string>
+
+    <!-- Sensor list -->
+    <string name="sensors_title">Sensors</string>
+    <plurals name="sensors_count">
+        <item quantity="one">%1$d sensor on this device</item>
+        <item quantity="other">%1$d sensors on this device</item>
+    </plurals>
+    <string name="show_wakeup_variants">Show wake-up variants</string>
+    <string name="more_options">More options</string>
+    <string name="category_motion">Motion</string>
+    <string name="category_position">Position</string>
+    <string name="category_environment">Environment</string>
+    <string name="category_other">Other</string>
+    <string name="preview_waiting">Waiting…</string>
+    <string name="preview_event_waiting">Waiting for event</string>
+    <string name="preview_unavailable">Unavailable</string>
+    <string name="action_grant">Grant</string>
+
+    <!-- Bridge -->
+    <string name="bridge_title">ADB bridge</string>
+    <string name="bridge_stopped">Off. Turn on to stream sensors to your computer.</string>
+    <string name="bridge_starting">Starting…</string>
+    <plurals name="bridge_running">
+        <item quantity="one">Listening · %1$d client connected</item>
+        <item quantity="other">Listening · %1$d clients connected</item>
+    </plurals>
+    <string name="bridge_failed">Couldn’t start: %1$s</string>
+    <string name="bridge_connect_hint">On your computer:</string>
+    <string name="copy">Copy</string>
+    <string name="copied">Copied</string>
+
+    <!-- Sensor detail -->
+    <string name="navigate_up">Back</string>
+    <string name="sensor_not_found">This sensor is no longer available.</string>
+    <string name="live_heading">Live</string>
+    <plurals name="history_heading">
+        <item quantity="one">Last %1$d second</item>
+        <item quantity="other">Last %1$d seconds</item>
+    </plurals>
+    <string name="sample_rate">Sample rate (Hz)</string>
+    <string name="measured_rate">%1$s Hz measured</string>
+    <string name="pause">Pause</string>
+    <string name="resume">Resume</string>
+    <string name="magnitude">magnitude</string>
+    <string name="permission_needed_title">Permission needed</string>
+    <string name="permission_needed_body">Android only shares this sensor with apps that hold %1$s.</string>
+    <string name="sensor_error">This sensor couldn’t be read: %1$s</string>
+    <string name="on_change_hint">Reports only when its value changes. Cover or move the sensor to see updates.</string>
+    <string name="event_hint">Reports discrete events. Recent events appear below.</string>
+    <string name="recent_events">Recent events</string>
+    <string name="no_events_yet">No events yet</string>
+    <string name="details_heading">Details</string>
+    <string name="detail_key">Bridge key</string>
+    <string name="detail_type">Type</string>
+    <string name="detail_vendor">Vendor</string>
+    <string name="detail_version">Version</string>
+    <string name="detail_reporting">Reporting</string>
+    <string name="detail_wakeup">Wake-up</string>
+    <string name="detail_range">Range</string>
+    <string name="detail_resolution">Resolution</string>
+    <string name="detail_power">Power</string>
+    <string name="detail_max_rate">Max rate</string>
+    <string name="yes">Yes</string>
+    <string name="no">No</string>
+    <string name="reporting_continuous">Continuous</string>
+    <string name="reporting_on_change">On change</string>
+    <string name="reporting_one_shot">One-shot</string>
+    <string name="reporting_special">Event</string>
+    <string name="cli_heading">From your computer</string>
+    <string name="accuracy_unreliable">Unreliable</string>
+    <string name="accuracy_low">Low accuracy</string>
+    <string name="accuracy_medium">Medium accuracy</string>
+    <string name="accuracy_high">High accuracy</string>
+    <string name="accuracy_none">No contact</string>
+
+    <!-- Microphone -->
+    <string name="category_media">Media</string>
+    <string name="microphone_title">Microphone</string>
+    <string name="microphone_row_supporting">%1$s · spectrogram</string>
+    <string name="microphone_summary">%1$.1f kHz · %2$s</string>
+    <string name="microphone_source_unprocessed">Unprocessed</string>
+    <string name="microphone_source_voice">Voice recognition</string>
+    <string name="microphone_level">Level</string>
+    <string name="microphone_loudness">Loudness (RMS)</string>
+    <string name="microphone_clipping">Clipping</string>
+    <string name="microphone_peak_frequency">Strongest frequency</string>
+    <string name="microphone_tone">Musical tone</string>
+    <string name="microphone_tone_with_frequency">Musical tone · %1$s</string>
+    <string name="microphone_spectrogram">Spectrogram</string>
+    <string name="microphone_window">Last %1$d s</string>
+    <plurals name="microphone_spectrogram_description">
+        <item quantity="one">Spectrogram of the last %1$d second of microphone audio. Touch and hold to read frequency and level.</item>
+        <item quantity="other">Spectrogram of the last %1$d seconds of microphone audio. Touch and hold to read frequency and level.</item>
+    </plurals>
+    <string name="microphone_inspect_hint">Touch and hold the spectrogram to read frequency and level.</string>
+    <string name="microphone_scale_log">Log frequency</string>
+    <string name="microphone_scale_linear">Linear frequency</string>
+    <string name="microphone_sample_rate">Sample rate</string>
+    <string name="microphone_source">Audio source</string>
+    <string name="microphone_fft">Analysis</string>
+    <string name="microphone_frequency_resolution">Frequency step</string>
+    <string name="microphone_time_resolution">Time step</string>
+    <string name="microphone_range">Colour range</string>
+    <string name="microphone_privacy">Audio is analysed live on the phone and never recorded, stored or sent anywhere. The microphone is released as soon as you leave this screen.</string>
+    <string name="microphone_unavailable">No supported recording format</string>
+
+    <!-- Camera -->
+    <string name="camera_title">Sketch camera</string>
+    <string name="camera_row_supporting_both">Live line art · back and front</string>
+    <string name="camera_row_supporting_one">Live line art</string>
+    <string name="camera_back">Back camera</string>
+    <string name="camera_front">Front camera</string>
+    <string name="camera_subtitle_fps">%1$s · %2$s fps</string>
+    <string name="camera_subtitle_paused">%1$s · paused</string>
+    <string name="camera_switch">Switch camera</string>
+    <string name="camera_starting">Starting camera…</string>
+    <string name="camera_canvas_description">Live line drawing of what the camera sees</string>
+    <string name="camera_detail">Detail</string>
+    <string name="camera_line_weight">Line weight</string>
+    <string name="camera_save">Save sketch</string>
+    <string name="camera_saving">Saving…</string>
+    <string name="camera_saved">Saved to %1$s</string>
+    <string name="camera_save_failed">Couldn’t save: %1$s</string>
+    <string name="camera_view">View</string>
+    <string name="camera_no_viewer">No app can open images</string>
+
+    <!-- Notification -->
+    <string name="notification_channel_bridge">ADB bridge</string>
+    <string name="notification_channel_bridge_description">Shown while sensors are being shared with a connected computer</string>
+    <string name="notification_bridge_title">Sharing sensors over ADB</string>
+    <plurals name="notification_bridge_clients">
+        <item quantity="one">%1$d client · localabstract:%2$s</item>
+        <item quantity="other">%1$d clients · localabstract:%2$s</item>
+    </plurals>
+    <string name="action_stop">Stop</string>
+</resources>

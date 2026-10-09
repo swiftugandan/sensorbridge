@@ -1,0 +1,88 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">Tilt</string>
+    <string name="tagline">A marble labyrinth you steer with your hands</string>
+
+    <!-- Home -->
+    <string name="play">Play</string>
+    <string name="continue_level">Continue · %1$s</string>
+    <string name="levels">Levels</string>
+    <string name="daily_challenge">Daily challenge</string>
+    <string name="daily">Daily</string>
+    <string name="daily_best">Today\'s best %1$s</string>
+    <string name="settings">Settings</string>
+    <plurals name="stars_progress">
+        <item quantity="one">%1$d of %2$d star</item>
+        <item quantity="other">%1$d of %2$d stars</item>
+    </plurals>
+
+    <!-- Levels -->
+    <string name="chapter_training">Training</string>
+    <string name="chapter_labyrinths">Labyrinths</string>
+    <string name="locked">Locked</string>
+    <string name="level_tile_description">Level %1$d, %2$s</string>
+    <string name="not_played">not played</string>
+    <plurals name="stars">
+        <item quantity="one">%d star</item>
+        <item quantity="other">%d stars</item>
+    </plurals>
+
+    <!-- Play -->
+    <string name="loading_level">Building the labyrinth…</string>
+    <string name="load_failed">This level couldn\'t be loaded: %1$s</string>
+    <string name="par">Par %1$s</string>
+    <string name="pause">Pause</string>
+    <string name="back">Back</string>
+    <string name="paused">Paused</string>
+    <string name="resume">Resume</string>
+    <string name="restart">Restart</string>
+    <string name="quit_to_levels">Back to levels</string>
+    <string name="hold_level">Hold your phone the way that feels level</string>
+    <string name="hold_steady">Hold steady…</string>
+    <string name="hold_flat">Hold your phone flat</string>
+    <string name="jump_hint_sound">Blow or clap to jump</string>
+    <string name="jump_hint_tap">Tap to jump</string>
+    <string name="jump_hint_touch">Tap with a second finger to jump</string>
+    <string name="touch_hint">Drag anywhere to steer</string>
+    <string name="go">Go</string>
+    <string name="level_complete">Level complete</string>
+    <string name="new_best">New best</string>
+    <string name="best_time">Best %1$s</string>
+    <string name="falls">Falls %1$d</string>
+    <string name="next_level">Next level</string>
+    <string name="retry">Retry</string>
+    <string name="mic_listening">Listening for a blow or clap</string>
+    <string name="mic_denied">Microphone access is off, so tap to jump instead</string>
+
+    <!-- Settings -->
+    <string name="section_steering">Steering</string>
+    <string name="steering_tilt">Tilt</string>
+    <string name="steering_touch">Touch</string>
+    <string name="steering_tilt_summary">Tilt the phone to roll the marble</string>
+    <string name="steering_touch_summary">Drag on the screen as if tilting the board</string>
+    <string name="neutral_title">Level position</string>
+    <string name="neutral_auto">As held</string>
+    <string name="neutral_flat">Flat</string>
+    <string name="sensitivity">Sensitivity</string>
+    <string name="sensitivity_value">%1$.1f×</string>
+    <string name="section_jumping">Jumping</string>
+    <string name="jump_sound">Blow or clap</string>
+    <string name="jump_tap">Tap</string>
+    <string name="jump_sound_summary">The microphone listens for a short loud sound while you play. Nothing is recorded or kept.</string>
+    <string name="mic_permission_needed">Allow microphone access to jump by blowing</string>
+    <string name="allow">Allow</string>
+    <string name="open_settings">Open settings</string>
+    <string name="mic_test">Try it: blow or clap</string>
+    <string name="mic_test_jump">Jump!</string>
+    <string name="section_feedback">Sound and touch</string>
+    <string name="sound_effects">Sound effects</string>
+    <string name="volume">Volume</string>
+    <string name="vibration">Vibration</string>
+    <string name="section_progress">Progress</string>
+    <string name="reset_progress">Reset progress</string>
+    <string name="reset_progress_summary">Clears best times and stars and locks the labyrinths again</string>
+    <string name="reset_confirm_title">Reset all progress?</string>
+    <string name="reset_confirm_body">Best times and stars for every level will be lost. This can\'t be undone.</string>
+    <string name="reset">Reset</string>
+    <string name="cancel">Cancel</string>
+</resources>

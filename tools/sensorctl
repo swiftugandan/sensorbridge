@@ -1,0 +1,407 @@
+#!/usr/bin/env python3
+"""sensorctl: read an Android phone's sensors from your computer through the SensorBridge app.
+
+The app serves newline-delimited JSON on the abstract socket "sensorbridge"; sensorctl forwards a local TCP
+port to it with adb, starting the bridge service on the phone first if it is not running.
+
+Examples:
+  sensorctl list
+  sensorctl read accelerometer light
+  sensorctl stream accelerometer gyroscope --rate 100 --duration 5
+  sensorctl stream light --format csv > light.csv
+"""
+
+from __future__ import annotations
+
+import argparse
+import datetime as dt
+import json
+import os
+import shutil
+import socket
+import subprocess
+import sys
+import time
+from typing import Iterator
+
+PACKAGE = "dev.sensorbridge"
+SERVICE = f"{PACKAGE}/.bridge.BridgeService"
+TRAMPOLINE = f"{PACKAGE}/.bridge.StartBridgeActivity"
+STOP_ACTION = f"{PACKAGE}.action.STOP_BRIDGE"
+SOCKET_NAME = "sensorbridge"
+DEFAULT_PORT = 7337
+PROTOCOL_VERSION = 1
+
+CATEGORY_ORDER = {"motion": 0, "position": 1, "environment": 2, "other": 3}
+
+# Response types that end a request.
+TERMINAL = {"hello", "sensors", "done", "error"}
+
+
+class CliError(Exception):
+    """An error that is reported as a single line and a non-zero exit, without a traceback."""
+
+    def __init__(self, message: str, hint: str | None = None):
+        super().__init__(message)
+        self.hint = hint
+
+
+# --------------------------------------------------------------------------------------------------- adb
+
+
+class Adb:
+    def __init__(self, serial: str | None):
+        exe = os.environ.get("ADB") or shutil.which("adb")
+        if not exe:
+            raise CliError("adb not found", "Install Android platform-tools or set $ADB to its path.")
+        self.base = [exe] + (["-s", serial] if serial else [])
+
+    def run(self, *args: str) -> str:
+        result = subprocess.run(self.base + list(args), capture_output=True, text=True)
+        if result.returncode != 0:
+            detail = (result.stderr or result.stdout).strip()
+            if "no devices" in detail or "not found" in detail:
+                raise CliError("no device connected", "Connect the phone with USB debugging enabled, or pass -s SERIAL.")
+            if "more than one" in detail:
+                raise CliError("more than one device connected", "Pick one with -s SERIAL (see `adb devices`).")
+            raise CliError(f"adb {' '.join(args)} failed: {detail}")
+        return result.stdout
+
+    def forward(self, port: int) -> None:
+        self.run("forward", f"tcp:{port}", f"localabstract:{SOCKET_NAME}")
+
+    def is_installed(self) -> bool:
+        return f"package:{PACKAGE}" in self.run("shell", "pm", "list", "packages", PACKAGE).split()
+
+    def start_bridge(self) -> None:
+        # Vendor task managers and Android 12+ may refuse a background service start for a stopped app;
+        # an activity start is always allowed, so fall back to the invisible trampoline.
+        try:
+            self._am("start-foreground-service", "-n", SERVICE)
+        except CliError:
+            self._am("start", "-n", TRAMPOLINE)
+
+    def is_bridge_running(self) -> bool:
+        return "ServiceRecord" in self.run("shell", "dumpsys", "activity", "services", SERVICE)
+
+    def stop_bridge(self) -> bool:
+        """Returns False when there was nothing to stop."""
+        if not self.is_bridge_running():
+            return False
+        self._am("start-foreground-service", "-n", SERVICE, "-a", STOP_ACTION)
+        return True
+
+    def _am(self, *args: str) -> None:
+        out = self.run("shell", "am", *args)
+        if "Error" in out:
+            raise CliError(f"could not control the bridge service: {out.strip()}")
+
+
+# ------------------------------------------------------------------------------------------- connection
+
+
+class Connection:
+    def __init__(self, sock: socket.socket):
+        self.sock = sock
+        self.reader = sock.makefile("r", encoding="utf-8", newline="\n")
+
+    def close(self) -> None:
+        try:
+            self.sock.close()
+        except OSError:
+            pass
+
+    def request(self, message: dict) -> Iterator[dict]:
+        """Sends one request and yields its responses, ending after the terminal one."""
+        self.sock.sendall((json.dumps(message, separators=(",", ":")) + "\n").encode())
+        while True:
+            line = self.reader.readline()
+            if not line:
+                raise ConnectionError("bridge closed the connection")
+            response = json.loads(line)
+            yield response
+            if response.get("type") in TERMINAL or message["type"] == "read":
+                return
+
+    def call(self, message: dict) -> dict:
+        responses = list(self.request(message))
+        return responses[-1]
+
+
+def connect(adb: Adb, port: int, autostart: bool = True) -> tuple[Connection, dict]:
+    """Forwards the port and handshakes, starting the bridge on the phone if nothing answers."""
+    adb.forward(port)
+    started = False
+    deadline = None
+    while True:
+        try:
+            sock = socket.create_connection(("127.0.0.1", port), timeout=5)
+            conn = Connection(sock)
+            hello = conn.call({"type": "hello"})
+            if hello.get("type") == "error":
+                raise_for_error(hello)
+            sock.settimeout(None)
+            if hello.get("protocol") != PROTOCOL_VERSION:
+                print(f"warning: bridge speaks protocol {hello.get('protocol')}, sensorctl expects {PROTOCOL_VERSION}", file=sys.stderr)
+            return conn, hello
+        except (ConnectionError, OSError, json.JSONDecodeError):
+            # adb accepts the TCP connection even when nothing listens on the phone, then hangs up.
+            if not autostart:
+                raise CliError("the bridge is not running", "Start it in the app, or run `sensorctl start`.")
+            if not started:
+                if not adb.is_installed():
+                    raise CliError("SensorBridge is not installed on the device",
+                                   "Install it with `./gradlew :app:installDebug` from the project root.")
+                adb.start_bridge()
+                started = True
+                deadline = time.monotonic() + 5
+            elif time.monotonic() > deadline:
+                raise CliError("the bridge did not start", "Open the SensorBridge app and check the ADB bridge card.")
+            time.sleep(0.25)
+
+
+def raise_for_error(response: dict) -> None:
+    code, message = response.get("code", "error"), response.get("message", "")
+    hint = None
+    if code == "permission-required":
+        permission = message.split(" requires the ")[-1].split(" ")[0] if " requires the " in message else None
+        if permission:
+            hint = f"Grant it with: adb shell pm grant {PACKAGE} {permission}"
+    elif code == "unknown-sensor":
+        hint = "Run `sensorctl list --all` to see valid keys."
+    elif code == "timeout":
+        hint = "On-change and event sensors only report when something changes; try moving or covering the phone."
+    raise CliError(f"{code}: {message}", hint)
+
+
+# ----------------------------------------------------------------------------------------------- output
+
+
+class Style:
+    def __init__(self, enabled: bool):
+        self.enabled = enabled
+
+    def _wrap(self, code: str, text: str) -> str:
+        return f"\033[{code}m{text}\033[0m" if self.enabled else text
+
+    def dim(self, text: str) -> str:
+        return self._wrap("2", text)
+
+    def bold(self, text: str) -> str:
+        return self._wrap("1", text)
+
+    def accent(self, text: str) -> str:
+        return self._wrap("36", text)
+
+
+STYLE = Style(sys.stdout.isatty() and "NO_COLOR" not in os.environ)
+
+
+def table(rows: list[list[str]], headers: list[str]) -> str:
+    widths = [max(len(str(r[i])) for r in rows + [headers]) for i in range(len(headers))]
+    fmt = lambda row: "  ".join(str(c).ljust(w) for c, w in zip(row, widths)).rstrip()
+    lines = [STYLE.bold(fmt(headers))] + [fmt(r) for r in rows]
+    return "\n".join(lines)
+
+
+def fmt_value(v: float) -> str:
+    return f"{v:.4f}" if abs(v) < 1e5 else f"{v:.3e}"
+
+
+def wall_time(ms: int) -> str:
+    return dt.datetime.fromtimestamp(ms / 1000).strftime("%H:%M:%S.%f")[:-3]
+
+
+def describe_reading(reading: dict, sensor: dict | None) -> str:
+    """Documented values with their labels; undocumented vendor extras are summarised, not printed."""
+    axes = (sensor or {}).get("axes") or [f"v{i}" for i in range(len(reading["values"]))]
+    values = reading["values"]
+    shown = values[: len(axes)]
+    parts = [f"{STYLE.dim(label)} {fmt_value(v):>10}" for label, v in zip(axes, shown)]
+    unit = (sensor or {}).get("unit")
+    text = "  ".join(parts) + (f"  {unit}" if unit else "")
+    extras = len(values) - len(shown)
+    if extras > 0:
+        text += STYLE.dim(f"  (+{extras} vendor value{'s' if extras > 1 else ''}; --json shows all)")
+    return text
+
+
+# --------------------------------------------------------------------------------------------- commands
+
+
+def fetch_sensors(conn: Connection) -> dict[str, dict]:
+    response = conn.call({"type": "list"})
+    if response.get("type") == "error":
+        raise_for_error(response)
+    return {s["key"]: s for s in response["sensors"]}
+
+
+def cmd_list(conn: Connection, args) -> None:
+    sensors = fetch_sensors(conn)
+    if args.json:
+        print(json.dumps(list(sensors.values()), indent=2))
+        return
+    shown = [s for s in sensors.values() if args.all or not s["wakeUp"]]
+    rows = []
+    for s in sorted(shown, key=lambda s: (CATEGORY_ORDER.get(s["category"], len(CATEGORY_ORDER)), s["key"])):
+        max_rate = f"{1_000_000 / s['minDelayMicros']:.0f} Hz" if s["minDelayMicros"] > 0 else "—"
+        rows.append([s["key"], s["displayName"], s["category"], s["reportingMode"], s.get("unit") or "—", max_rate, s["name"]])
+    print(table(rows, ["KEY", "NAME", "CATEGORY", "MODE", "UNIT", "MAX RATE", "HARDWARE"]))
+    hidden = len(sensors) - len(shown)
+    if hidden:
+        print(STYLE.dim(f"\n{hidden} wake-up variants hidden; pass --all to show them."))
+
+
+def cmd_read(conn: Connection, args) -> None:
+    sensors = fetch_sensors(conn)
+    failures = 0
+    width = max(len(k) for k in args.sensors)
+    for key in args.sensors:
+        response = conn.call({"type": "read", "sensor": key, "timeoutMs": int(args.timeout * 1000)})
+        if response.get("type") == "error":
+            try:
+                raise_for_error(response)
+            except CliError as e:
+                failures += 1
+                report_error(e)
+                continue
+        reading = response["reading"]
+        if args.json:
+            print(json.dumps(reading))
+        else:
+            print(f"{STYLE.accent(key.ljust(width))}  {describe_reading(reading, sensors.get(key))}")
+    if failures:
+        sys.exit(1)
+
+
+def cmd_stream(conn: Connection, args) -> None:
+    sensors = fetch_sensors(conn)
+    request = {"type": "stream", "sensors": args.sensors, "rateHz": args.rate}
+    if args.duration:
+        request["durationMs"] = int(args.duration * 1000)
+    if args.samples:
+        request["maxSamples"] = args.samples
+
+    # CSV carries each sensor's documented values only, padded to a fixed width so every row has the same
+    # columns; undocumented vendor extras are available with --format jsonl.
+    csv_width = max(len(sensors[k]["axes"]) if k in sensors else 1 for k in args.sensors) or 1
+    if args.format == "csv":
+        print(",".join(["wall_time_ms", "timestamp_ns", "sensor", "accuracy"] + [f"v{i}" for i in range(csv_width)]))
+    key_width = max(len(k) for k in args.sensors)
+
+    for response in conn.request(request):
+        kind = response.get("type")
+        if kind == "error":
+            raise_for_error(response)
+        if kind == "done":
+            if args.format == "table":
+                print(STYLE.dim(f"\n{response['samples']} samples ({response['reason']})"), file=sys.stderr)
+            return
+        reading = response["reading"]
+        if args.format == "jsonl":
+            print(json.dumps(reading), flush=True)
+        elif args.format == "csv":
+            documented = len(sensors[reading["sensor"]]["axes"]) or len(reading["values"])
+            values = [str(v) for v in reading["values"][:documented]][:csv_width]
+            values += [""] * (csv_width - len(values))
+            print(",".join([str(reading["wallTimeMillis"]), str(reading["timestampNanos"]), reading["sensor"], str(reading["accuracy"])] + values), flush=True)
+        else:
+            print(f"{STYLE.dim(wall_time(reading['wallTimeMillis']))}  {STYLE.accent(reading['sensor'].ljust(key_width))}  "
+                  f"{describe_reading(reading, sensors.get(reading['sensor']))}", flush=True)
+
+
+def cmd_info(conn: Connection, hello: dict, args) -> None:
+    sensors = fetch_sensors(conn)
+    if args.json:
+        print(json.dumps({**hello, "sensorCount": len(sensors)}, indent=2))
+        return
+    device = hello["device"]
+    print(f"{STYLE.bold(hello['app'])}  protocol {hello['protocol']}")
+    print(f"{device['manufacturer']} {device['model']}, Android {device['release']} (API {device['sdk']})")
+    print(f"{len(sensors)} sensors")
+
+
+# ------------------------------------------------------------------------------------------------- main
+
+
+def report_error(e: CliError) -> None:
+    print(f"error: {e}", file=sys.stderr)
+    if e.hint:
+        print(f"hint: {e.hint}", file=sys.stderr)
+
+
+def build_parser() -> argparse.ArgumentParser:
+    parser = argparse.ArgumentParser(
+        prog="sensorctl",
+        description="Read Android sensors from your computer through the SensorBridge app.",
+        formatter_class=argparse.RawDescriptionHelpFormatter,
+        epilog="Examples:" + __doc__.split("Examples:", 1)[1],
+    )
+    parser.add_argument("-s", "--serial", default=os.environ.get("ANDROID_SERIAL"), help="device serial (as in `adb devices`)")
+    parser.add_argument("-p", "--port", type=int, default=int(os.environ.get("SENSORCTL_PORT", DEFAULT_PORT)),
+                        help=f"local TCP port to forward (default {DEFAULT_PORT})")
+    parser.add_argument("--no-start", action="store_true", help="fail instead of starting the bridge service")
+    sub = parser.add_subparsers(dest="command", required=True, metavar="COMMAND")
+
+    p = sub.add_parser("list", help="list sensors and their keys")
+    p.add_argument("--all", action="store_true", help="include wake-up variants")
+    p.add_argument("--json", action="store_true", help="print full descriptors as JSON")
+
+    p = sub.add_parser("read", help="print one reading from each sensor")
+    p.add_argument("sensors", nargs="+", metavar="SENSOR")
+    p.add_argument("--timeout", type=float, default=3.0, help="seconds to wait per sensor (default 3)")
+    p.add_argument("--json", action="store_true", help="print readings as JSON")
+
+    p = sub.add_parser("stream", help="stream readings until interrupted")
+    p.add_argument("sensors", nargs="+", metavar="SENSOR")
+    p.add_argument("-r", "--rate", type=int, default=50, help="samples per second for continuous sensors (default 50)")
+    p.add_argument("-d", "--duration", type=float, help="stop after this many seconds")
+    p.add_argument("-n", "--samples", type=int, help="stop after this many readings")
+    p.add_argument("-f", "--format", choices=["table", "csv", "jsonl"], default="table", help="output format (default table)")
+
+    p = sub.add_parser("info", help="show the device and bridge version")
+    p.add_argument("--json", action="store_true")
+
+    sub.add_parser("start", help="start the bridge service on the device")
+    sub.add_parser("stop", help="stop the bridge service on the device")
+    return parser
+
+
+def main(argv: list[str] | None = None) -> int:
+    args = build_parser().parse_args(argv)
+    conn = None
+    try:
+        adb = Adb(args.serial)
+        if args.command == "stop":
+            print("bridge stopped" if adb.stop_bridge() else "bridge was not running")
+            return 0
+        conn, hello = connect(adb, args.port, autostart=not args.no_start)
+        if args.command == "start":
+            print(f"bridge running on {hello['device']['model']} · forwarded to 127.0.0.1:{args.port}")
+        elif args.command == "list":
+            cmd_list(conn, args)
+        elif args.command == "read":
+            cmd_read(conn, args)
+        elif args.command == "stream":
+            cmd_stream(conn, args)
+        elif args.command == "info":
+            cmd_info(conn, hello, args)
+        return 0
+    except CliError as e:
+        report_error(e)
+        return 1
+    except KeyboardInterrupt:
+        return 130
+    except BrokenPipeError:
+        # Output piped into `head` and friends; exit quietly.
+        return 0
+    except ConnectionError as e:
+        report_error(CliError(str(e), "Is the bridge still running? Check the notification on the phone."))
+        return 1
+    finally:
+        if conn:
+            conn.close()
+
+
+if __name__ == "__main__":
+    sys.exit(main())
